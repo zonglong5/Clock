@@ -1,31 +1,80 @@
-  document.getElementById("status").innerText = "狀態：" + status;
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>打卡鐘</title>
+</head>
 
-  db.collection("attendance").add({
-    emp: currentUser,
-    status: status,
-    time: new Date()
-  });
-}
-</script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<body style="font-family:Arial;text-align:center;margin-top:50px">
+
+<h2>打卡鐘</h2>
+
+<div id="user">未登入</div>
+<br>
+
+<input id="emp" placeholder="員工編號 (001)">
+<br><br>
+
+<button onclick="login()">登入</button>
+
+<hr>
+
+<h3 id="status">狀態：未打卡</h3>
+
+<button onclick="checkIn()">🟢 上班</button>
+<button onclick="checkOut()">🔴 下班</button>
+<button onclick="other()">📝 其他</button>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyD_dHAAm1N6Xr591OqoFYDECNV3R1WO6b4",
-  authDomain: "c-a6dfe.firebaseapp.com",
-  projectId: "c-a6dfe",
-  storageBucket: "c-a6dfe.firebasestorage.app",
-  messagingSenderId: "508487742510",
-  appId: "1:508487742510:web:2c4cb27d3b805ea673dbbf",
-  measurementId: "G-BWZXMSG4G3"
-};
+  // ===== Firebase 設定 =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyD_dHAAm1N6Xr591OqoFYDECNV3R1WO6b4",
+    authDomain: "c-a6dfe.firebaseapp.com",
+    projectId: "c-a6dfe",
+    storageBucket: "c-a6dfe.appspot.com",
+    messagingSenderId: "508487742510",
+    appId: "1:508487742510:web:2c4cb27d3b805ea673dbbf"
+  };
 
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+  // ===== 使用者 =====
+  let currentUser = "";
+
+  function login(){
+    currentUser = document.getElementById("emp").value;
+    document.getElementById("user").innerText = "員工：" + currentUser;
+  }
+
+  function checkIn(){
+    save("上班");
+  }
+
+  function checkOut(){
+    save("下班");
+  }
+
+  function other(){
+    let text = prompt("請輸入狀態");
+    if(text) save(text);
+  }
+
+  // ===== 存到 Firebase =====
+  function save(status){
+    document.getElementById("status").innerText = "狀態：" + status;
+
+    db.collection("attendance").add({
+      emp: currentUser,
+      status: status,
+      time: new Date()
+    });
+  }
 </script>
-
 
 </body>
 </html>
